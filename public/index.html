@@ -6,21 +6,81 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=McLaren&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
+    rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body{
+      font-family: 'Poppins',sans-serif;
+    }
+    @media (max-width: 768px) {
+      .container {
+        width: 500px;
+        height: auto;
+        padding: 20px;
+      }
+
+      .heading {
+        font-size: 18px;
+      }
+
+      .p1,
+      .p2 {
+        font-size: 14px;
+      }
+
+      .cont {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .country {
+        width: auto;
+        margin-right: 0;
+        height: auto;
+      }
+
+      .cont-list {
+        position: absolute;
+        width: auto;
+        left: 100px;
+        top: 240px;
+      }
+
+      hr {
+        width: 100%;
+      }
+
+      .move {
+        flex-direction: column;
+        left: 0px;
+        margin-bottom: 100px;
+      }
+
+      .validation-message {
+        margin-bottom: 30px;
+      }
+    }
+
+    @media (max-width: 1400px) {
+      .move {
+        left: 200px;
+      }
+    }
+
+    @media (max-width: 1000px) {
+      .move {
+        left: 0px;
+      }
+    }
+  </style>
   <title>Nationality</title>
 </head>
 
 <body>
-  <div class="container">
-    <h1 class="heading">Your Nationality/Citizenship</h1>
-    <hr>
-    <p class="p1">What's you country of nationality/citizenship?</p>
-    <p class="p2">Please select all that apply.</p>
-    
-    
-    <div id="root"></div>
-  </div>
+  <div id="root"></div>
 </body>
 
 </html>

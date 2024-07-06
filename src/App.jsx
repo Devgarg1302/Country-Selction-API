@@ -1,16 +1,19 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 
 function App() {
     const [countries, setCountries] = useState([]);
     const [selectedNationality, setSelectedNationality] = useState([]);
     const [showOtherNationalities, setShowOtherNationalities] = useState(false);
-    const [savedSelections, setSavedSelections] = useState([]);
+    const [selectedTaxResidence, setSelectedTaxResidence] = useState([]);
+    const [showOtherTaxResidences, setShowOtherTaxResidences] = useState(false);
+    const [validationMessage, setValidationMessage] = useState('');
 
     const ENDPOINT = 'https://restcountries.com/v3.1/all';
     const ukFlag = "https://flagcdn.com/w320/gb.png";
     const usFlag = "https://flagcdn.com/w320/us.png";
+    const nationalityRef = useRef(null);
 
-    const selectedStyle = { backgroundColor: '#e2ace2', border: 'solid 2px purple' };
+    const selectedStyle = { backgroundColor: 'rgb(255 194 205)', border: 'solid 2px rgb(208 87 109)' };
 
     useEffect(() => {
         fetch(`${ENDPOINT}`)
@@ -29,9 +32,25 @@ function App() {
             });
     }, []);
 
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (nationalityRef.current && !nationalityRef.current.contains(event.target)) {
+                setShowOtherNationalities(false);
+                setShowOtherTaxResidences(false);
+            }
+        };
+
+        document.addEventListener('mousedown', handleClickOutside);
+
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, [nationalityRef]);
+
     const handleNationalityChange = (value) => {
         if (value === "Others") {
             setShowOtherNationalities(true);
+            setShowOtherTaxResidences(false);
         } else {
             setShowOtherNationalities(false);
             setSelectedNationality([{
@@ -42,33 +61,67 @@ function App() {
 
         }
     };
+    const handleTaxResidenceChange = (value) => {
+        if (value === "Others") {
+            setShowOtherNationalities(false);
+            setShowOtherTaxResidences(true);
+        } else {
+            setShowOtherTaxResidences(false);
+            setSelectedTaxResidence([{
+                name: value,
+                code: countries.find(country => country.name === value)?.code,
+                flag: countries.find(country => country.name === value)?.flag
+            }]);
 
-    const handleCountrySelect = (countryName) => {
+        }
+    };
+
+    const handleCountrySelect = (countryName, type) => {
         const selectedCountry = countries.find(country => country.name === countryName);
         const updatedSelection = {
             name: selectedCountry.name,
             code: selectedCountry.code,
             flag: selectedCountry.flag
         };
-        setSelectedNationality(prevSelected => {
-            const alreadySelected = prevSelected.some(country => country.name === countryName);
-            if (alreadySelected) {
-                return prevSelected.filter(country => country.name !== countryName);
-            } else {
-                return [updatedSelection];
-            }
-        });
 
-        setShowOtherNationalities(false);
+        if (type === 'nationality') {
+            setSelectedNationality(prevSelected => {
+                const alreadySelected = prevSelected.some(country => country.name === countryName);
+                if (alreadySelected) {
+                    return prevSelected.filter(country => country.name !== countryName);
+                } else {
+                    return [updatedSelection];
+                }
+            });
+            setShowOtherNationalities(false);
+        }
+        else {
+            setSelectedTaxResidence(prevSelected => {
+                const alreadySelected = prevSelected.some(country => country.name === countryName);
+                if (alreadySelected) {
+                    return prevSelected.filter(country => country.name !== countryName);
+                } else {
+                    return [updatedSelection];
+                }
+            });
+            setShowOtherTaxResidences(false);
+        }
+
     };
 
-    const renderCountryOption = (country) => {
+    const renderCountryOption = (country, type) => {
+        const isSelected = type === 'nationality' ? selectedNationality.includes(country.name) : selectedTaxResidence.includes(country.name);
+
         return (
-            <div className="list-cont" key={country.code}>
-                <div className="cont-flag" onClick={() => handleCountrySelect(country.name)}>
-                    <img src={country.flag} alt={country.name} />
+            <div className="flex w-[250px] mb-2.5" key={country.code} onClick={() => handleCountrySelect(country.name, type)}
+                style={(
+                    isSelected ? { ...selectedStyle } : {}
+                )}
+            >
+                <div className="w-5 h-5 mx-[5px]">
+                    <img src={country.flag} alt={country.name} className="h-5 w-5 rounded-[10px]"/>
                 </div>
-                <div className="cont-name" onClick={() => handleCountrySelect(country.name)}>
+                <div className="cont-name">
                     {country.name}
                 </div>
             </ div>
@@ -79,14 +132,14 @@ function App() {
     const renderSelectedCountries = (selectedCountries) => {
         const uk = selectedCountries.some(sel => sel.name === "United Kingdom");
         const us = selectedCountries.some(sel => sel.name === "United States")
-        if ( !uk && !us) {
+        if (!uk && !us) {
             return selectedCountries.map((country) => (
-                <div className="country"
+                <div className="flex text-sm bg-[white] h-auto w-auto justify-center cursor-pointer mr-[15px] mt-[15px] p-3 rounded-[22px] border-solid border-2 border-[rgb(181,181,181)]"
                     key={country.code}
-                    style={selectedNationality.some(sel => sel.name === country.name) ? { ...selectedStyle } : {}}
+                    style={selectedNationality.some(sel => sel.name === country.name) || selectedTaxResidence.some(sel => sel.name === country.name) ? { ...selectedStyle } : {}}
                 >
-                    <div className="cont-flag">
-                        <img src={country.flag} />
+                    <div className="w-5 h-5 mx-[5px]">
+                        <img src={country.flag} className="h-5 w-5 rounded-[10px]"/>
                     </div>
                     <div className="cont-name">
                         {country.name}
@@ -96,51 +149,134 @@ function App() {
         }
     };
 
+    const handleContinue = () => {
+        if (selectedNationality.length === 0 || selectedTaxResidence.length === 0) {
+            setValidationMessage('*Please select both nationality and tax residence.*');
+        } else {
+            setValidationMessage('');
+            alert('Moving to the next page...');
+        }
+    };
+
     return (
-        <>
-            <div className="cont">
-                <div className="country"
-                    key='GB'
-                    style={selectedNationality.some(sel => sel.name === "United Kingdom") ? { ...selectedStyle } : {}}
-                >
-                    <div className="cont-flag" onClick={() => handleNationalityChange("United Kingdom")}>
-                        <img src={ukFlag} />
+        <div className="flex flex-col mx-auto">
+            <div className="flex relative h-[250px] w-[700px] shadow-[0px_0px_12px_-2px_lightgray] bg-[white] flex-col mt-[15px] mx-auto p-[30px] rounded-[20px] top-[40px]">
+                <div className="flex flex-row items-center text-xl font-semibold relative top-[5px]"><p className="text-[rgb(208_87_109)] mr-[5px]">08.</p>Your Nationality/Citizenship</div>
+                <hr className="w-auto opacity-[40%] relative mt-2.5 border-[solid] border-[#a8a8a8] top-[10px]"/>
+                <div className="relative top-[15px]">
+                <p className="font-semibold mt-2.5 mb-[5px]">What's you country of nationality/citizenship?</p>
+                <p className="text-[#868686] mt-2.5 mb-[5px]">Please select all that apply.</p>
+
+
+                <div className="flex">
+                    <div className="flex text-sm bg-[white] h-auto w-auto justify-center cursor-pointer mr-[15px] mt-[15px] p-3 rounded-[22px] border-solid border-2 border-[rgb(181,181,181)]"
+                        key='GB'
+                        style={selectedNationality.some(sel => sel.name === "United Kingdom") ? { ...selectedStyle } : {}}
+                        onClick={() => handleNationalityChange("United Kingdom")}
+                    >
+                        <div className="w-5 h-5 mx-[5px]">
+                            <img src={ukFlag} className="h-5 w-5 rounded-[10px]"/>
+                        </div>
+                        <div className="cont-name">
+                            United Kingdom
+                        </div>
                     </div>
-                    <div className="cont-name" onClick={() => handleNationalityChange("United Kingdom")}>
-                        United Kingdom
+
+                    <div className="flex text-sm bg-[white] h-auto w-auto justify-center cursor-pointer mr-[15px] mt-[15px] p-3 rounded-[22px] border-solid border-2 border-[rgb(181,181,181)]"
+                        key='US'
+                        style={selectedNationality.some(sel => sel.name === "United States") ? { ...selectedStyle } : {}}
+                        onClick={() => handleNationalityChange("United States")}
+                    >
+                        <div className="w-5 h-5 mx-[5px]">
+                            <img src={usFlag} className="h-5 w-5 rounded-[10px]"/>
+                        </div>
+                        <div className="cont-name">
+                            United States
+                        </div>
                     </div>
+
+                    <>
+                        {renderSelectedCountries(selectedNationality)}
+                    </>
+
+                    <div className="flex text-sm bg-[white] h-auto w-auto justify-center cursor-pointer mr-[15px] mt-[15px] p-3 rounded-[22px] border-solid border-2 border-[rgb(181,181,181)]" onClick={() => handleNationalityChange("Others")}>
+                        <div className="cont-name">
+                            Others
+                        </div>
+                    </div>
+                    {showOtherNationalities && (
+                        <div className="absolute z-10 w-auto h-[200px] flex bg-[#f4f4f4] overflow-y-auto flex-col cursor-pointer text-[15px] p-5 rounded-[10px] left-[440px] top-[140px]" ref={nationalityRef}>
+                            {countries.map(country => renderCountryOption(country, 'nationality'))}
+                        </div>
+                    )}
                 </div>
-
-                <div className="country"
-                    key='US'
-                    style={selectedNationality.some(sel => sel.name === "United States") ? { ...selectedStyle } : {}}
-                >
-                    <div className="cont-flag" onClick={() => handleNationalityChange("United States")}>
-                        <img src={usFlag} />
-                    </div>
-                    <div className="cont-name" onClick={() => handleNationalityChange("United States")}>
-                        United States
-                    </div>
                 </div>
-
-                <>
-                    {renderSelectedCountries(selectedNationality)};
-                </>
-
-                <div className="country">
-                    <div className="cont-name" onClick={() => handleNationalityChange("Others")}>
-                        Others
-                    </div>
-                </div>
-
-                {showOtherNationalities && (
-                    <div className="cont-list">
-                        {countries.map(country => renderCountryOption(country))}
-                    </div>
-                )}
-
+                
             </div>
-        </>
+
+            <div className="flex relative h-[250px] w-[700px] shadow-[0px_0px_12px_-2px_lightgray] bg-[white] flex-col mt-[20px] mx-auto p-[30px] rounded-[20px] top-[40px]">
+                <div class="flex flex-row items-center text-xl font-semibold relative top-[5px]"><p className="text-[rgb(208_87_109)] mr-[5px]">09.</p>Your Tax Details</div>
+                <hr className="w-auto opacity-[40%] relative mt-2.5 border-[solid] border-[#a8a8a8] top-[10px]"/>
+                <div className="relative top-[15px]">
+                <p className="font-semibold mt-2.5 mb-[5px]">In which country are you tax resident?</p>
+                <p className="text-[#868686] mt-2.5 mb-[5px]">Please select all that apply.</p>
+
+
+                <div className="flex">
+                    <div className="flex text-sm bg-[white] h-auto w-auto justify-center cursor-pointer mr-[15px] mt-[15px] p-3 rounded-[22px] border-solid border-2 border-[rgb(181,181,181)]"
+                        key='GB'
+                        style={selectedTaxResidence.some(sel => sel.name === "United Kingdom") ? { ...selectedStyle } : {}}
+                        onClick={() => handleTaxResidenceChange("United Kingdom")}
+                    >
+                        <div className="w-5 h-5 mx-[5px]">
+                            <img src={ukFlag} className="h-5 w-5 rounded-[10px]"/>
+                        </div>
+                        <div className="cont-name">
+                            United Kingdom
+                        </div>
+                    </div>
+
+                    <div className="flex text-sm bg-[white] h-auto w-auto justify-center cursor-pointer mr-[15px] mt-[15px] p-3 rounded-[22px] border-solid border-2 border-[rgb(181,181,181)]"
+                        key='US'
+                        style={selectedTaxResidence.some(sel => sel.name === "United States") ? { ...selectedStyle } : {}}
+                        onClick={() => handleTaxResidenceChange("United States")}
+                    >
+                        <div className="w-5 h-5 mx-[5px]">
+                            <img src={usFlag} className="h-5 w-5 rounded-[10px]"/>
+                        </div>
+                        <div className="cont-name">
+                            United States
+                        </div>
+                    </div>
+
+                    <>
+                        {renderSelectedCountries(selectedTaxResidence)}
+                    </>
+
+                    <div className="flex text-sm bg-[white] h-auto w-auto justify-center cursor-pointer mr-[15px] mt-[15px] p-3 rounded-[22px] border-solid border-2 border-[rgb(181,181,181)]" onClick={() => handleTaxResidenceChange("Others")}>
+                        <div className="cont-name">
+                            Others
+                        </div>
+                        {showOtherTaxResidences && (
+                            <div className="absolute z-10 w-auto h-[200px] flex bg-[#f4f4f4] overflow-y-auto flex-col cursor-pointer text-[15px] p-5 rounded-[10px] left-[440px] top-[140px]" ref={nationalityRef}>
+                                {countries.map(country => renderCountryOption(country, 'tax'))}
+                            </div>
+                        )}
+                    </div>
+
+                </div>
+                </div>
+                
+            </div>
+            <div className="flex relative items-center flex-row-reverse max-w-[700px] left-[400px] top-[60px]">
+            
+                <div className="flex items-center justify-center text-[whitesmoke] text-[15px] w-[100px] bg-[rgb(208_87_109)] cursor-pointer p-2.5 rounded-[10px]" onClick={handleContinue}>
+                    Continue
+                </div>
+                {validationMessage && <div className="max-w-[500px] text-[15px] text-[rgb(171,11,40)] h-auto mr-[30px]">{validationMessage}</div>}
+            </div>
+            
+        </div>
     );
 };
 

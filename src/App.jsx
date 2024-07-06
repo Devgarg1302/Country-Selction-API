@@ -134,7 +134,7 @@ function App() {
         const us = selectedCountries.some(sel => sel.name === "United States")
         if (!uk && !us) {
             return selectedCountries.map((country) => (
-                <div className="flex text-sm bg-[white] h-auto w-auto justify-center cursor-pointer mr-[15px] mt-[15px] p-3 rounded-[22px] border-solid border-2 border-[rgb(181,181,181)]"
+                <div className="flex text-sm bg-[white] h-auto w-auto justify-center cursor-pointer mr-[15px] mt-[15px] p-3 rounded-[22px] border-solid border-2 border-[rgb(181,181,181)] max-[768px]:h-auto w-auto mr-0"
                     key={country.code}
                     style={selectedNationality.some(sel => sel.name === country.name) || selectedTaxResidence.some(sel => sel.name === country.name) ? { ...selectedStyle } : {}}
                 >
@@ -160,16 +160,16 @@ function App() {
 
     return (
         <div className="flex flex-col mx-auto">
-            <div className="flex relative h-[250px] w-[700px] shadow-[0px_0px_12px_-2px_lightgray] bg-[white] flex-col mt-[15px] mx-auto p-[30px] rounded-[20px] top-[40px]">
-                <div className="flex flex-row items-center text-xl font-semibold relative top-[5px]"><p className="text-[rgb(208_87_109)] mr-[5px]">08.</p>Your Nationality/Citizenship</div>
-                <hr className="w-auto opacity-[40%] relative mt-2.5 border-[solid] border-[#a8a8a8] top-[10px]"/>
+            <div className="flex relative h-[250px] w-[700px] shadow-[0px_0px_12px_-2px_lightgray] bg-[white] flex-col mt-[20px] mx-auto p-[30px] rounded-[20px] top-[40px] max-[768px]:w-[500px] p-[20px] h-auto">
+                <div className="flex flex-row items-center text-xl font-semibold relative top-[5px] max-[768px]:text-[18px]"><p className="text-[rgb(208_87_109)] mr-[5px]">08.</p>Your Nationality/Citizenship</div>
+                <hr className="w-auto opacity-[40%] relative mt-2.5 border-[solid] border-[#a8a8a8] top-[10px] max-[768px]:w-auto"/>
                 <div className="relative top-[15px]">
-                <p className="font-semibold mt-2.5 mb-[5px]">What's you country of nationality/citizenship?</p>
-                <p className="text-[#868686] mt-2.5 mb-[5px]">Please select all that apply.</p>
+                <p className="font-semibold mt-2.5 mb-[5px] max-[768px]:text-[14px]">What's you country of nationality/citizenship?</p>
+                <p className="text-[#868686] mt-2.5 mb-[5px] max-[768px]:text-[14px]">Please select all that apply.</p>
 
 
-                <div className="flex">
-                    <div className="flex text-sm bg-[white] h-auto w-auto justify-center cursor-pointer mr-[15px] mt-[15px] p-3 rounded-[22px] border-solid border-2 border-[rgb(181,181,181)]"
+                <div className="flex max-[768px]:flex-col items-start">
+                    <div className="flex text-sm bg-[white] h-auto w-auto justify-center cursor-pointer mr-[15px] mt-[15px] p-3 rounded-[22px] border-solid border-2 border-[rgb(181,181,181)] max-[768px]:h-auto w-auto mr-0"
                         key='GB'
                         style={selectedNationality.some(sel => sel.name === "United Kingdom") ? { ...selectedStyle } : {}}
                         onClick={() => handleNationalityChange("United Kingdom")}
@@ -182,7 +182,7 @@ function App() {
                         </div>
                     </div>
 
-                    <div className="flex text-sm bg-[white] h-auto w-auto justify-center cursor-pointer mr-[15px] mt-[15px] p-3 rounded-[22px] border-solid border-2 border-[rgb(181,181,181)]"
+                    <div className="flex text-sm bg-[white] h-auto w-auto justify-center cursor-pointer mr-[15px] mt-[15px] p-3 rounded-[22px] border-solid border-2 border-[rgb(181,181,181)] max-[768px]:h-auto w-auto mr-0"
                         key='US'
                         style={selectedNationality.some(sel => sel.name === "United States") ? { ...selectedStyle } : {}}
                         onClick={() => handleNationalityChange("United States")}
@@ -199,13 +199,13 @@ function App() {
                         {renderSelectedCountries(selectedNationality)}
                     </>
 
-                    <div className="flex text-sm bg-[white] h-auto w-auto justify-center cursor-pointer mr-[15px] mt-[15px] p-3 rounded-[22px] border-solid border-2 border-[rgb(181,181,181)]" onClick={() => handleNationalityChange("Others")}>
+                    <div className="flex text-sm bg-[white] h-auto w-auto justify-center cursor-pointer mr-[15px] mt-[15px] p-3 rounded-[22px] border-solid border-2 border-[rgb(181,181,181)] max-[768px]:h-auto w-auto mr-0" onClick={() => handleNationalityChange("Others")}>
                         <div className="cont-name">
                             Others
                         </div>
                     </div>
                     {showOtherNationalities && (
-                        <div className="absolute z-10 w-auto h-[200px] flex bg-[#f4f4f4] overflow-y-auto flex-col cursor-pointer text-[15px] p-5 rounded-[10px] left-[440px] top-[140px]" ref={nationalityRef}>
+                        <div className="absolute z-10 w-auto h-[200px] flex bg-[#f4f4f4] overflow-y-auto flex-col cursor-pointer text-[15px] p-5 rounded-[10px] left-[440px] top-[140px] max-[768px]:absolute w-auto left-[99px] top-[240px]" ref={nationalityRef}>
                             {countries.map(country => renderCountryOption(country, 'nationality'))}
                         </div>
                     )}
@@ -214,16 +214,16 @@ function App() {
                 
             </div>
 
-            <div className="flex relative h-[250px] w-[700px] shadow-[0px_0px_12px_-2px_lightgray] bg-[white] flex-col mt-[20px] mx-auto p-[30px] rounded-[20px] top-[40px]">
-                <div class="flex flex-row items-center text-xl font-semibold relative top-[5px]"><p className="text-[rgb(208_87_109)] mr-[5px]">09.</p>Your Tax Details</div>
-                <hr className="w-auto opacity-[40%] relative mt-2.5 border-[solid] border-[#a8a8a8] top-[10px]"/>
+            <div className="flex relative h-[250px] w-[700px] shadow-[0px_0px_12px_-2px_lightgray] bg-[white] flex-col mt-[20px] mx-auto p-[30px] rounded-[20px] top-[40px] max-[768px]:w-[500px] p-[20px] h-auto">
+                <div class="flex flex-row items-center text-xl font-semibold relative top-[5px] max-[768px]:text-[18px]"><p className="text-[rgb(208_87_109)] mr-[5px]">09.</p>Your Tax Details</div>
+                <hr className="w-auto opacity-[40%] relative mt-2.5 border-[solid] border-[#a8a8a8] top-[10px] max-[768px]:w-auto"/>
                 <div className="relative top-[15px]">
-                <p className="font-semibold mt-2.5 mb-[5px]">In which country are you tax resident?</p>
-                <p className="text-[#868686] mt-2.5 mb-[5px]">Please select all that apply.</p>
+                <p className="font-semibold mt-2.5 mb-[5px] max-[768px]:text-[14px]">In which country are you tax resident?</p>
+                <p className="text-[#868686] mt-2.5 mb-[5px] max-[768px]:text-[14px]">Please select all that apply.</p>
 
 
-                <div className="flex">
-                    <div className="flex text-sm bg-[white] h-auto w-auto justify-center cursor-pointer mr-[15px] mt-[15px] p-3 rounded-[22px] border-solid border-2 border-[rgb(181,181,181)]"
+                <div className="flex max-[768px]:flex-col items-start">
+                    <div className="flex text-sm bg-[white] h-auto w-auto justify-center cursor-pointer mr-[15px] mt-[15px] p-3 rounded-[22px] border-solid border-2 border-[rgb(181,181,181)] max-[768px]:h-auto w-auto mr-0"
                         key='GB'
                         style={selectedTaxResidence.some(sel => sel.name === "United Kingdom") ? { ...selectedStyle } : {}}
                         onClick={() => handleTaxResidenceChange("United Kingdom")}
@@ -236,7 +236,7 @@ function App() {
                         </div>
                     </div>
 
-                    <div className="flex text-sm bg-[white] h-auto w-auto justify-center cursor-pointer mr-[15px] mt-[15px] p-3 rounded-[22px] border-solid border-2 border-[rgb(181,181,181)]"
+                    <div className="flex text-sm bg-[white] h-auto w-auto justify-center cursor-pointer mr-[15px] mt-[15px] p-3 rounded-[22px] border-solid border-2 border-[rgb(181,181,181)] max-[768px]:h-auto w-auto mr-0"
                         key='US'
                         style={selectedTaxResidence.some(sel => sel.name === "United States") ? { ...selectedStyle } : {}}
                         onClick={() => handleTaxResidenceChange("United States")}
@@ -253,12 +253,12 @@ function App() {
                         {renderSelectedCountries(selectedTaxResidence)}
                     </>
 
-                    <div className="flex text-sm bg-[white] h-auto w-auto justify-center cursor-pointer mr-[15px] mt-[15px] p-3 rounded-[22px] border-solid border-2 border-[rgb(181,181,181)]" onClick={() => handleTaxResidenceChange("Others")}>
+                    <div className="flex text-sm bg-[white] h-auto w-auto justify-center cursor-pointer mr-[15px] mt-[15px] p-3 rounded-[22px] border-solid border-2 border-[rgb(181,181,181)] max-[768px]:h-auto w-auto mr-0" onClick={() => handleTaxResidenceChange("Others")}>
                         <div className="cont-name">
                             Others
                         </div>
                         {showOtherTaxResidences && (
-                            <div className="absolute z-10 w-auto h-[200px] flex bg-[#f4f4f4] overflow-y-auto flex-col cursor-pointer text-[15px] p-5 rounded-[10px] left-[440px] top-[140px]" ref={nationalityRef}>
+                            <div className="absolute z-10 w-auto h-[200px] flex bg-[#f4f4f4] overflow-y-auto flex-col cursor-pointer text-[15px] p-5 rounded-[10px] left-[440px] top-[140px] max-[768px]:absolute w-auto left-[99px] top-[240px]" ref={nationalityRef}>
                                 {countries.map(country => renderCountryOption(country, 'tax'))}
                             </div>
                         )}
@@ -268,12 +268,12 @@ function App() {
                 </div>
                 
             </div>
-            <div className="flex relative items-center flex-row-reverse max-w-[700px] left-[400px] top-[60px]">
+            <div className="flex relative items-center flex-row-reverse max-w-[700px] left-[400px] top-[60px] max-[768px]:flex-col left-0 mb-[100px] max-[1400px]:left-[200px] max-[1000px]:left-0">
             
                 <div className="flex items-center justify-center text-[whitesmoke] text-[15px] w-[100px] bg-[rgb(208_87_109)] cursor-pointer p-2.5 rounded-[10px]" onClick={handleContinue}>
                     Continue
                 </div>
-                {validationMessage && <div className="max-w-[500px] text-[15px] text-[rgb(171,11,40)] h-auto mr-[30px]">{validationMessage}</div>}
+                {validationMessage && <div className="max-w-[500px] text-[15px] text-[rgb(171,11,40)] h-auto mr-[30px] max-[768px]:mb-[30px]">{validationMessage}</div>}
             </div>
             
         </div>

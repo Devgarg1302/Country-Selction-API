@@ -22,7 +22,7 @@ This project is a web application that provides functionality to select national
 
 1. Clone the repository:
     ```sh
-    https://github.com/Devgarg1302/Country-Selction-API.git
+    git clone https://github.com/Devgarg1302/Country-Selction-API.git
     cd country-select
     ```
 
